@@ -1,0 +1,13 @@
+id: morning-briefing
+enabled: false
+schedule:
+  type: daily
+  at: "07:00"
+
+prompt: |
+  Autonomous morning briefing for the household.
+  1. Get local weather (use a free API or curl wttr.in for a one-line forecast).
+  2. send_notification with a friendly spoken-style summary, e.g. temperature and conditions.
+  3. If temperature is above 85F, add a line offering to adjust the thermostat
+     (only if Home Assistant or a thermostat API is configured in workspace).
+  Keep the message short — this will eventually be read aloud on Bluetooth speakers.

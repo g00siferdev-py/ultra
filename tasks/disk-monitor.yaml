@@ -1,0 +1,11 @@
+id: disk-monitor
+enabled: true
+schedule:
+  type: interval
+  minutes: 360
+
+prompt: |
+  Autonomous disk health check.
+  Check disk usage on all mounts. If any filesystem is above 85% full,
+  send_notification with a concise alert including mount point and percent used.
+  If everything is fine, reply NO_ACTION.

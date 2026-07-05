@@ -1,0 +1,5 @@
+Linux Ultra 1.0 — AI-driven home orchestration hub
+
+First boot: run  ultra setup --prod
+Chat:          ultra chat
+Help:          ultra doctor

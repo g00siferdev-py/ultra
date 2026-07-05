@@ -1,0 +1,10 @@
+PRETTY_NAME="Linux Ultra 1.0"
+NAME="Linux Ultra"
+ID=ultra
+ID_LIKE=debian
+VERSION="1.0 (bookworm)"
+VERSION_ID="1.0"
+VERSION_CODENAME=bookworm
+HOME_URL="https://github.com/linux-ultra/ultra"
+SUPPORT_URL="https://github.com/linux-ultra/ultra"
+BUG_REPORT_URL="https://github.com/linux-ultra/ultra/issues"

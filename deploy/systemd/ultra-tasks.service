@@ -1,0 +1,13 @@
+[Unit]
+Description=Linux Ultra scheduled background tasks
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=ultra
+Group=ultra
+WorkingDirectory=/var/ultra
+Environment=ULTRA_CONFIG=/etc/ultra/config.yaml
+ExecStart=/usr/local/bin/ultra tasks run-due
+Nice=10

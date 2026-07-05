@@ -1,0 +1,57 @@
+# Copy this file to config.local.yaml (dev) or /etc/ultra/config.yaml (on the Pi)
+#
+# Two separate things live in this file:
+#   1. LLM settings  — how Ultra thinks (Ollama, OpenAI, Anthropic)
+#   2. channels      — how Ultra reaches YOU (Discord, Telegram, email)
+
+# =============================================================================
+# LLM — your AI provider (this is the "brain")
+# =============================================================================
+
+provider: ollama
+# Which backend to use:
+#   ollama     — Ollama (local or ollama.com cloud)
+#   openai     — api.openai.com
+#   anthropic  — api.anthropic.com
+
+api_key: ""
+# Ollama cloud API key from https://ollama.com/settings/keys
+# Also reads OLLAMA_API_KEY env var (same as Persistent Sage / Snowball).
+# Not needed for purely local models on localhost.
+
+model: kimi-k2.5:cloud
+# Model name. Cloud examples: kimi-k2.5:cloud, qwen3.5:397b-cloud
+# Local examples: llama3.1, qwen2.5:7b
+
+ollama_base_url: "https://ollama.com/v1"
+# Use https://ollama.com/v1 when authenticating with an Ollama API key (cloud).
+# Use http://localhost:11434/v1 for local models without a key.
+
+# =============================================================================
+# Agent behavior
+# =============================================================================
+
+workspace: workspace
+tasks_dir: tasks
+audit_log: logs/audit.log
+extra_instructions: ""
+
+# =============================================================================
+# Notification channels — how the agent contacts YOU (optional)
+# =============================================================================
+# These are NOT for the LLM. Discord/Telegram/email are outbound alerts only.
+# Configure whichever you want; leave the rest blank.
+
+channels:
+  telegram:
+    bot_token: ""
+    chat_id: ""
+  discord:
+    webhook_url: ""
+  email:
+    smtp_host: ""
+    smtp_port: 587
+    username: ""
+    password: ""
+    from: "ultra@local"
+    to: ""

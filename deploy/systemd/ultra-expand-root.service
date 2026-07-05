@@ -1,0 +1,12 @@
+[Unit]
+Description=Linux Ultra expand root partition on first boot
+After=local-fs.target
+ConditionPathExists=!/var/lib/ultra/root-expanded
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/ultra-expand-root
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
