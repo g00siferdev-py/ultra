@@ -14,6 +14,8 @@ You (chat / voice / alerts)  <->  ultra-agent  <->  OS (shell, apt, systemd, API
 - **Scheduled background tasks** — proactive disk checks, briefings, alerts via systemd
 - **First-boot wizard** — `ultra setup` for API key and Discord/Telegram
 - **Flashable Pi 5 image** — Debian Bookworm arm64, built locally or via GitHub Actions
+- **Home Assistant** — bundled on Pi image (Docker); dev via local Docker
+- **Network discovery** — LAN scan + mDNS for smart devices
 - **Discord webhooks** — outbound alerts (one-way)
 
 ## Quick start (development)
@@ -47,6 +49,10 @@ python -m ultra chat
 | `ultra tasks run <id> --force` | Run a task now |
 | `ultra tasks run-due` | Run all due tasks (systemd calls this) |
 | `ultra channels test discord` | Send a test Discord message |
+| `ultra memory status` | Memory DB + local embed model check |
+| `ultra memory search "query"` | Search long-term memory |
+| `ultra discover network --save` | Scan LAN for smart-home devices |
+| `ultra ha status` | Home Assistant container + API check |
 | `ultra channels telegram-id` | Look up your Telegram chat_id |
 | `ultra image info` | How to build and flash the Pi image |
 
@@ -81,7 +87,7 @@ Copy `config.example.yaml` to `config.local.yaml` (dev) or use `ultra setup --pr
 | `channels.telegram` | Outbound Telegram alerts |
 | `tasks/` | Scheduled background task definitions |
 
-Full details: [docs/CONFIGURATION.md](docs/CONFIGURATION.md)
+Full details: [docs/CONFIGURATION.md](docs/CONFIGURATION.md) · [docs/MEMORY.md](docs/MEMORY.md) (Persistent Sage RAG)
 
 ## Architecture
 
@@ -113,7 +119,8 @@ See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 | M2 — Scheduled background tasks | Done |
 | M3 — First-boot setup wizard | Done |
 | M4 — Flashable Pi 5 image + GitHub Actions | Done |
-| M5 — Smart home scaffolding (Home Assistant, lights, TV) | Planned |
+| M4.5 — Memory, personality, CLI menu | Done |
+| M5 — Smart home (HA, discovery, tasks) | Done (validate on Pi) |
 | M6 — Voice (Bluetooth mic/speaker, Alexa-style) | Planned |
 
 ## Project layout

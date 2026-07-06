@@ -9,5 +9,6 @@ User=ultra
 Group=ultra
 WorkingDirectory=/var/ultra
 Environment=ULTRA_CONFIG=/etc/ultra/config.yaml
+Environment=FASTEMBED_CACHE_PATH=/var/lib/ultra/fastembed
 ExecStart=/usr/local/bin/ultra tasks run-due
 Nice=10

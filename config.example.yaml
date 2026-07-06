@@ -37,6 +37,54 @@ audit_log: logs/audit.log
 extra_instructions: ""
 
 # =============================================================================
+# Companion personality (Persistent Sage-compatible personality.json)
+# =============================================================================
+# Defines tone, values, and relationship style. The agent can read/edit this file
+# via personality_get / personality_update tools when you ask it to change behavior.
+
+personality:
+  enabled: true
+  path: ""                   # default: workspace/personality.json (or PS data dir)
+  persistent_sage_compat: true
+
+# =============================================================================
+# Memory Anchor (Persistent Sage-compatible RAG)
+# =============================================================================
+# Chat uses Ollama Cloud (or your configured provider).
+# Embeddings use baked-in fastembed ONNX — no Ollama install required on Linux Ultra.
+
+memory:
+  enabled: true
+  database: ""  # optional path to nova_memory.sqlite; auto-detects Persistent Sage data dir
+  persistent_sage_compat: true
+  personality_id: ultra  # use "default" to share anchors with Persistent Sage desktop
+  semantic_enabled: true
+  embed_backend: fastembed   # fastembed (default, baked into Pi image) | ollama
+  embed_model: nomic-embed-text
+  embed_cache_dir: ""        # Pi image: /var/lib/ultra/fastembed (preloaded)
+  embed_ollama_url: "http://127.0.0.1:11434"  # only if embed_backend: ollama
+  auto_recall: true
+  auto_store: true
+  auto_embed: true
+  embed_batch_size: 8        # small batches — fast on Pi, run often
+  embed_startup_batches: 3   # max batches when agent starts (avoid hour-long block)
+  embed_backlog_alert: 50   # Discord/Telegram alert if pending exceeds this
+  recall_limit: 8
+
+# =============================================================================
+# Smart home — bundled Home Assistant on Linux Ultra Pi image
+# =============================================================================
+# The Pi image runs Home Assistant in Docker on port 8123 (systemd: ultra-homeassistant).
+# Create a long-lived token in the HA UI, then save it here or in token_file.
+
+smart_home:
+  home_assistant:
+    enabled: true
+    url: "http://127.0.0.1:8123"
+    token: ""
+    token_file: ""   # Pi default: /var/ultra/workspace/projects/smart-home/secrets/ha-token.txt
+
+# =============================================================================
 # Notification channels — how the agent contacts YOU (optional)
 # =============================================================================
 # These are NOT for the LLM. Discord/Telegram/email are outbound alerts only.

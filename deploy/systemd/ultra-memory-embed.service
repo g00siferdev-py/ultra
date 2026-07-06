@@ -1,0 +1,16 @@
+[Unit]
+Description=Linux Ultra memory embed tick (one batch, keeps backlog small)
+After=network-online.target
+
+[Service]
+Type=oneshot
+User=ultra
+Group=ultra
+Environment=ULTRA_CONFIG=/etc/ultra/config.yaml
+Environment=FASTEMBED_CACHE_PATH=/var/lib/ultra/fastembed
+ExecStart=/usr/local/bin/ultra memory embed-tick
+Nice=15
+IOSchedulingClass=idle
+
+[Install]
+WantedBy=multi-user.target

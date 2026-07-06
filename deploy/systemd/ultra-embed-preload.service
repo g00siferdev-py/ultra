@@ -1,0 +1,15 @@
+[Unit]
+Description=Linux Ultra preload memory embed model (first boot fallback)
+After=network-online.target
+ConditionPathExists=!/var/lib/ultra/embed-ready
+
+[Service]
+Type=oneshot
+Environment=FASTEMBED_CACHE_PATH=/var/lib/ultra/fastembed
+Environment=ULTRA_EMBED_MODEL=nomic-embed-text
+ExecStart=/opt/ultra/venv/bin/python /opt/ultra-src/deploy/scripts/preload-embed-model.py
+ExecStartPost=/usr/bin/touch /var/lib/ultra/embed-ready
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

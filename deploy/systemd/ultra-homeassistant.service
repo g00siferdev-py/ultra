@@ -1,0 +1,17 @@
+[Unit]
+Description=Home Assistant smart home hub (Linux Ultra)
+Documentation=https://www.home-assistant.io/installation/linux#platform-installation
+After=docker.service network-online.target ultra-homeassistant-pull.service
+Wants=network-online.target ultra-homeassistant-pull.service
+Requires=docker.service
+
+[Service]
+Type=simple
+Restart=on-failure
+RestartSec=15
+ExecStart=/usr/local/sbin/ultra-homeassistant start
+ExecStop=/usr/local/sbin/ultra-homeassistant stop
+TimeoutStartSec=0
+
+[Install]
+WantedBy=multi-user.target

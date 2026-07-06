@@ -76,6 +76,25 @@ def build_config_dict(
         "tasks_dir": tasks_dir,
         "audit_log": audit_log,
         "extra_instructions": "",
+        "personality": {
+            "enabled": True,
+            "path": "",
+            "persistent_sage_compat": True,
+        },
+        "memory": {
+            "enabled": True,
+            "database": "",
+            "persistent_sage_compat": True,
+            "personality_id": "ultra",
+            "semantic_enabled": True,
+            "embed_backend": "fastembed",
+            "embed_model": "nomic-embed-text",
+            "embed_cache_dir": "/var/lib/ultra/fastembed" if prod else "",
+            "embed_ollama_url": "http://127.0.0.1:11434",
+            "auto_recall": True,
+            "auto_store": True,
+            "recall_limit": 8,
+        },
         "channels": {
             "telegram": {
                 "bot_token": telegram_token,
@@ -93,7 +112,58 @@ def build_config_dict(
                 "to": "",
             },
         },
+        "smart_home": {
+            "home_assistant": {
+                "enabled": True,
+                "url": "http://127.0.0.1:8123",
+                "token": "",
+                "token_file": (
+                    "/var/ultra/workspace/projects/smart-home/secrets/ha-token.txt"
+                    if prod
+                    else "workspace/projects/smart-home/secrets/ha-token.txt"
+                ),
+            },
+        },
     }
+
+
+def ha_token_path(*, prod: bool) -> Path:
+    if prod:
+        return Path("/var/ultra/workspace/projects/smart-home/secrets/ha-token.txt")
+    return Path("workspace/projects/smart-home/secrets/ha-token.txt")
+
+
+def save_ha_token(*, prod: bool, token: str) -> Path:
+    path = ha_token_path(prod=prod)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(token.strip(), encoding="utf-8")
+    try:
+        path.chmod(0o600)
+    except OSError:
+        pass
+    return path
+
+
+def _test_home_assistant(token: str, url: str = "http://127.0.0.1:8123") -> tuple[bool, str]:
+    from ultra.config import ChannelsConfig, Config as ConfigCls, SmartHomeConfig, HomeAssistantConfig
+    from ultra.homeassistant import HomeAssistantClient
+
+    cfg = ConfigCls(
+        provider="ollama",
+        api_key="test",
+        model="llama3.1",
+        workspace=Path("workspace"),
+        audit_log=Path("logs/audit.log"),
+        extra_instructions="",
+        channels=ChannelsConfig(),
+        smart_home=SmartHomeConfig(
+            home_assistant=HomeAssistantConfig(enabled=True, url=url, token=token)
+        ),
+    )
+    result = HomeAssistantClient(cfg).check_api()
+    if result.ok:
+        return True, "Home Assistant API OK"
+    return False, str(result.error or result.data)
 
 
 def write_config(path: Path, data: dict[str, Any]) -> None:
@@ -190,6 +260,29 @@ def run_wizard(*, prod: bool, output: Path, force: bool) -> None:
                 click.echo(lookup.output)
                 telegram_chat_id = click.prompt("Enter chat_id manually").strip()
 
+    click.echo("")
+
+    # --- Home Assistant ---
+    click.echo("--- Home Assistant (smart home) ---")
+    ha_default = prod
+    if prod:
+        click.echo("Linux Ultra bundles Home Assistant at http://127.0.0.1:8123")
+        click.echo("Complete HA onboarding in the browser first, then create a token here.")
+    else:
+        click.echo("If you run HA locally (Docker), add a long-lived access token.")
+    click.echo("HA → Profile → Security → Long-Lived Access Tokens")
+    ha_token = ""
+    if click.confirm("Save a Home Assistant API token now?", default=ha_default):
+        ha_token = click.prompt("Long-lived access token", hide_input=True).strip()
+        if ha_token:
+            token_path = save_ha_token(prod=prod, token=ha_token)
+            click.echo(f"  Token saved to {token_path}")
+            click.echo("  Testing Home Assistant API...")
+            ok, msg = _test_home_assistant(ha_token)
+            click.echo(f"  {'OK' if ok else 'Warning'}: {msg}")
+            if not ok and not click.confirm("Continue setup anyway?", default=True):
+                raise click.ClickException("Setup cancelled.")
+
     data = build_config_dict(
         api_key=api_key.strip(),
         model=model.strip(),
@@ -225,4 +318,21 @@ def run_wizard(*, prod: bool, output: Path, force: bool) -> None:
     click.echo("")
     click.echo("Setup complete. Start chatting with:")
     click.echo("  python -m ultra chat")
+    if click.confirm("Customize companion personality now?", default=False):
+        from ultra.config import Config as ConfigCls
+        from ultra.personality_wizard import run_personality_customize
+
+        cfg = ConfigCls.load(output)
+        run_personality_customize(cfg, mode="walkthrough")
+    if prod:
+        click.echo("")
+        click.echo("Home Assistant:")
+        click.echo("  Web UI:  http://ultra.local:8123")
+        click.echo("  Status:  python -m ultra ha status")
+        if not ha_token:
+            click.echo("  Token:   run setup again with --force, or save to:")
+            click.echo("           /var/ultra/workspace/projects/smart-home/secrets/ha-token.txt")
+    elif not ha_token:
+        click.echo("")
+        click.echo("Home Assistant: save token later to workspace/projects/smart-home/secrets/ha-token.txt")
     click.echo("")

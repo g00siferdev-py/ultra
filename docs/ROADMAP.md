@@ -25,12 +25,25 @@
 - Auto-expand root partition on first boot
 - Branding (`/etc/os-release`, hostname `ultra`)
 
+### M4.5 — Memory Anchor (Persistent Sage RAG)
+- Hybrid FTS + semantic recall (fastembed ONNX on Pi)
+- `memory_search` / `memory_remember` tools
+- Frequent embed timer (anti-backlog on Pi)
+- Personality JSON + self-edit tools
+- CLI navigation menu
+
+### M5 — Smart home (mostly done)
+- Bundled Home Assistant (Docker) on Pi image
+- Network discovery (`ultra discover`, `network_discover` tool)
+- `home_assistant` agent tool + config-driven integration prompts
+- Example tasks: `morning-briefing`, `evening-lights`
+- HA token step in `ultra setup`
+
 ## Planned
 
-### M5 — Smart home scaffolding
-- Home Assistant API integration examples in workspace
-- MQTT / device discovery templates
-- Example tasks: lights, TV, thermostat via shell + HTTP
+### M5 polish (remaining)
+- Pi image rebuild + on-device validation
+- Enable tasks after user has HA entities configured
 
 ### M6 — Voice interface
 - Bluetooth speaker + mic (PipeWire, BlueZ)

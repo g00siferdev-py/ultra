@@ -16,4 +16,3 @@ config.test.yaml
 
 # Image build artifacts
 iso/work/
-dist/

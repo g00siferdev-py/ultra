@@ -1,0 +1,14 @@
+id: evening-lights
+enabled: false
+schedule:
+  type: daily
+  at: "23:00"
+
+prompt: |
+  Autonomous evening lights-off routine.
+  1. Read the Ultra config file for Home Assistant URL and token paths — do not guess.
+  2. Use home_assistant with action states to find entities matching light.* (and switch.* if they are room lights).
+  3. Turn off all lights via home_assistant call_service (domain light, service turn_off).
+     For switch-controlled lights use switch.turn_off instead.
+  4. If Home Assistant is unreachable or no controllable lights exist, reply NO_ACTION.
+  5. Otherwise send_notification with a one-line summary of what was turned off.

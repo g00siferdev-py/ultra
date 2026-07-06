@@ -6,8 +6,12 @@ schedule:
 
 prompt: |
   Autonomous morning briefing for the household.
-  1. Get local weather (use a free API or curl wttr.in for a one-line forecast).
-  2. send_notification with a friendly spoken-style summary, e.g. temperature and conditions.
-  3. If temperature is above 85F, add a line offering to adjust the thermostat
-     (only if Home Assistant or a thermostat API is configured in workspace).
+  1. Read the Ultra config for integration settings (Home Assistant, notification channels).
+  2. Get local weather (curl wttr.in or a free API) for a one-line forecast.
+  3. If Home Assistant is configured, use home_assistant states to note indoor temperature
+     from any climate.* or sensor.* temperature entities if present.
+  4. send_notification with a friendly spoken-style summary (weather + indoor temp if available).
+  5. If outdoor temperature is above 85F and a climate entity exists, mention that the
+     thermostat could be adjusted via Home Assistant.
   Keep the message short — this will eventually be read aloud on Bluetooth speakers.
+  If nothing useful to report, reply NO_ACTION.

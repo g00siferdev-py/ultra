@@ -82,6 +82,7 @@ mkdir -p "${ROOTFS}/tmp/ultra-deploy" "${ROOTFS}/tmp/ultra-overlay"
 rsync -a "${REPO_ROOT}/deploy/" "${ROOTFS}/tmp/ultra-deploy/"
 rsync -a "${SCRIPT_DIR}/overlay/" "${ROOTFS}/tmp/ultra-overlay/"
 install -m 755 "${REPO_ROOT}/deploy/scripts/ultra-expand-root" "${ROOTFS}/usr/local/sbin/ultra-expand-root"
+install -m 755 "${REPO_ROOT}/deploy/scripts/homeassistant-container.sh" "${ROOTFS}/usr/local/sbin/ultra-homeassistant"
 
 # Raspberry Pi apt signing key
 if curl -fsSL https://archive.raspberrypi.com/debian/raspberrypi.gpg.key -o "${ROOTFS}/tmp/raspberrypi.gpg.key"; then
