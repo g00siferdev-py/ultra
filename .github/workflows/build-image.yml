@@ -60,6 +60,7 @@ jobs:
         run: |
           chmod +x iso/build.sh iso/scripts/chroot-setup.sh
           sudo -E ./iso/build.sh
+          sudo chown -R "$USER:$USER" dist
 
       - name: Compress image
         run: |
