@@ -123,19 +123,22 @@ mkfs.vfat -F 32 -n BOOT "${BOOT_PART}"
 mkfs.ext4 -L ultra-root "${ROOT_PART}"
 
 MNT="${WORK_DIR}/mnt"
-BOOT_MNT="${WORK_DIR}/bootmnt"
-mkdir -p "${MNT}" "${BOOT_MNT}"
+mkdir -p "${MNT}"
 mount "${ROOT_PART}" "${MNT}"
 mkdir -p "${MNT}/boot/firmware"
 mount "${BOOT_PART}" "${MNT}/boot/firmware"
 
+cleanup_image_mounts() {
+  umount -lf "${MNT}/boot/firmware" 2>/dev/null || true
+  umount -lf "${MNT}" 2>/dev/null || true
+  if [ -n "${LOOP:-}" ]; then
+    losetup -d "${LOOP}" 2>/dev/null || true
+  fi
+}
+trap cleanup_image_mounts EXIT
+
 log "Copying rootfs to image..."
 rsync -aHAX "${ROOTFS}/" "${MNT}/"
-
-# Sync boot firmware to FAT partition
-if [ -d "${MNT}/boot/firmware" ]; then
-  rsync -a "${MNT}/boot/firmware/" "${BOOT_MNT}/"
-fi
 
 ROOT_UUID=$(blkid -s PARTUUID -o value "${ROOT_PART}")
 BOOT_UUID=$(blkid -s PARTUUID -o value "${BOOT_PART}")
@@ -147,18 +150,13 @@ PARTUUID=${ROOT_UUID}  /               ext4    defaults,noatime  0  1
 EOF
 
 # cmdline.txt with real root PARTUUID
-if [ -f "${BOOT_MNT}/cmdline.txt" ]; then
-  sed -i "s|ROOTDEV|PARTUUID=${ROOT_UUID}|g" "${BOOT_MNT}/cmdline.txt"
-  cp "${BOOT_MNT}/cmdline.txt" "${MNT}/boot/firmware/cmdline.txt"
-elif [ -f "${MNT}/boot/firmware/cmdline.txt" ]; then
+if [ -f "${MNT}/boot/firmware/cmdline.txt" ]; then
   sed -i "s|ROOTDEV|PARTUUID=${ROOT_UUID}|g" "${MNT}/boot/firmware/cmdline.txt"
-  cp "${MNT}/boot/firmware/cmdline.txt" "${BOOT_MNT}/cmdline.txt"
 fi
 
 sync
-umount "${BOOT_MNT}"
-umount "${MNT}"
-losetup -d "${LOOP}"
+cleanup_image_mounts
+trap - EXIT
 
 log "Done."
 log "Image: ${IMAGE_PATH}"
